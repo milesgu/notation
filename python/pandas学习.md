@@ -307,5 +307,109 @@ df[df.water_year.str.startswith('199')]
 
 注意，你必须用 .str.[string method] ，而不能直接在字符串上调用字符方法。上面的代码返回所有 90 年代的记录
 
+### 操作数据集的结构
+重新建立数据结构，使得数据集呈现出一种更方便并且（或者）有用的形式。
+#### gourpby
+##### groupby可以通过传入需要分组的参数实现对数据的分组
+<pre>
+a=data_train.groupby('Pclass')
+
+type(a)
+Out[143]: pandas.core.groupby.DataFrameGroupBy
+</pre>
+可见分组结果的类型比较特殊，是DataFrameGroupBy
+这个类型是无法输出的
+可以调用size方法，输出每个分组的样本个数
+<pre>
+a.size()
+Out[144]: 
+Pclass
+1    216
+2    184
+3    491
+dtype: int64
+</pre>
+也可以指定多个分组依据（列标签）
+<pre>
+a=data_train.groupby(['Survived','Pclass'])
+
+type(a.size())
+Out[154]: pandas.core.series.Series
+
+a.size()
+Out[155]: 
+Survived  Pclass
+0         1          80
+          2          97
+          3         372
+1         1         136
+          2          87
+          3         119
+dtype: int64
+</pre>
+从这里我们看到size方法的返回值类型是Series，且我们发现，Series的标签可以是多级的。
+
+DataFrameGroupBy还提供了count方法
+<pre>
+a.count?
+Signature: a.count()
+Docstring: Compute count of group, excluding missing values 
+File:      c:\programdata\anaconda3\lib\site-packages\pandas\core\groupby.py
+Type:      method
+</pre>
+即我们可以调用count方法，算出除了已经作为分组依据的列以外的所有其他列的非缺失项个数
+<pre>
+a=data_train.groupby(['Survived','Pclass'])
+
+type(a.count())
+Out[159]: pandas.core.frame.DataFrame
+
+a.count()
+Out[160]: 
+                 PassengerId  Name  Sex  Age  SibSp  Parch  Ticket  Fare  \
+Survived Pclass                                                            
+0        1                80    80   80   64     80     80      80    80   
+         2                97    97   97   90     97     97      97    97   
+         3               372   372  372  270    372    372     372   372   
+1        1               136   136  136  122    136    136     136   136   
+         2                87    87   87   83     87     87      87    87   
+         3               119   119  119   85    119    119     119   119   
+
+                 Cabin  Embarked  
+Survived Pclass                   
+0        1          59        80  
+         2           3        97  
+         3           6       372  
+1        1         117       134  
+         2          13        87  
+         3           6       119   
+</pre>
+可见，count方法返回值的类型是DataFrame，其中用于分组的Survived和Pclass标签被用作该DataFrame的二级行索引
+既然size的返回结果是Series，count的返回结果是DataFrame，那么我们可以通过loc等函数进行索引
+
+另外，还提供了get_group方法，可以根据提供的分组依据具体值，恢复出一个DataFrame来，这个时候分组依据重新变成了列的内容
+<pre>
+type(a.get_group((1,2)))
+Out[162]: pandas.core.frame.DataFrame
+
+a.get_group((1,2)).head()
+Out[163]: 
+    PassengerId  Survived  Pclass                                      Name  \
+9            10         1       2       Nasser, Mrs. Nicholas (Adele Achem)   
+15           16         1       2          Hewlett, Mrs. (Mary D Kingcome)    
+17           18         1       2              Williams, Mr. Charles Eugene   
+21           22         1       2                     Beesley, Mr. Lawrence   
+43           44         1       2  Laroche, Miss. Simonne Marie Anne Andree   
+
+       Sex   Age  SibSp  Parch         Ticket     Fare Cabin Embarked  
+9   female  14.0      1      0         237736  30.0708   NaN        C  
+15  female  55.0      0      0         248706  16.0000   NaN        S  
+17    male   NaN      0      0         244373  13.0000   NaN        S  
+21    male  34.0      0      0         248698  13.0000   D56        S  
+43  female   3.0      1      2  SC/Paris 2123  41.5792   NaN        C  
+</pre>
+上述代码，指定了（1,2），即Survived=1，Pclass=2
+
+总结一下,size方法可以统计每个具体分组的样本个数，count方法可以统计每个具体分组下，每个列标签对应的非缺失项的个数（不包含用于分组的列），get_group方法可以返回指定分组的所有样本内容（用于分组的列也作为内容列）
 ### 剩下还有一些内容不再单独学习，碰到了再说
 http://codingpy.com/article/a-quick-intro-to-pandas/
