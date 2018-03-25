@@ -2,6 +2,8 @@
 全称python data analysis library，是基于Numpy的一种工具，该工具是为了解决数据分析任务而创建的
 pandas提供了大量能使我们方便快捷的进行数据分析的函数和方法
 
+以下内容主要根据http://codingpy.com/article/a-quick-intro-to-pandas/进行学习
+
 ###数据结构
 ####Series：
 一维数组，与Numpy中的一维array类似。二者与Python基本的数据结构List也很相近，其区别是：List中的元素可以是不同的数据类型，而Array和Series中则只允许存储相同的数据类型，这样可以更有效的使用内存，提高运算效率。
@@ -219,3 +221,91 @@ print (df.ix[1])
 '''  
 </pre>
 
+### 更改列标签
+以英国的降雨数据为例，先读入，再查看信息
+<pre>
+df=pd.read_csv('uk_rain_2014.csv')
+print(df.info())
+</pre>
+
+结果如下
+<pre>
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 33 entries, 0 to 32
+Data columns (total 7 columns):
+Water Year                33 non-null object
+Rain (mm) Oct-Sep         33 non-null int64
+Outflow (m3/s) Oct-Sep    33 non-null int64
+Rain (mm) Dec-Feb         33 non-null int64
+Outflow (m3/s) Dec-Feb    33 non-null int64
+Rain (mm) Jun-Aug         33 non-null int64
+Outflow (m3/s) Jun-Aug    33 non-null int64
+dtypes: int64(6), object(1)
+memory usage: 1.9+ KB
+None
+</pre>
+上面显示了每一列的具体信息
+
+我们看到每一列的标签非常复杂。在前面的例子中，我们已经知道了columns列表中保存的就是列标签，于是我们只需要更改columns列表的内容即可。赋值时，列表的元素个数必须和原DataFrame的列数一致。
+<pre>
+df.columns=['water_year','rain_octsep', 'outflow_octsep', 
+'rain_decfeb', 'outflow_decfeb', 
+'rain_junaug', 'outflow_junaug']
+</pre>
+此时再查看信息
+<pre>
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 33 entries, 0 to 32
+Data columns (total 7 columns):
+water_year        33 non-null object
+rain_octsep       33 non-null int64
+outflow_octsep    33 non-null int64
+rain_decfeb       33 non-null int64
+outflow_decfeb    33 non-null int64
+rain_junaug       33 non-null int64
+outflow_junaug    33 non-null int64
+dtypes: int64(6), object(1)
+memory usage: 1.9+ KB
+None
+</pre>
+我们可以看到所有列的列名（列标签）都已经改变
+改变之后有一个好处，我们可以通过.列标签的形式引用某一列
+例如
+<pre>
+print(df.water_year)
+</pre>
+就可以直接以series的形式输出某一列
+
+### 将某一列的内容作为索引、将索引恢复为列
+读入csv文件后，默认的行索引是行号，我们可以通过set_index方法，将某一列的内容设置为行索引
+例如```df.set_index(df.water_year)```可以将water_year这一列作为行索引，这样water_year这一列就不再属于数据内容了
+注意，该方法并不会改变df本身，而是生成一个copy，改变了行索引后以返回值的形式给出
+所以要想改变df，需要进行赋值```df=df.set_index(df.water_year)```
+行索引也可以有多列，相当于一级索引，二级索引之类的，例如
+```df=df.set_index['water_year','rain_octsep']```
+在此基础上，如果我们再次设置剩下的列中的某一列作为新的行索引，那么water_year和rain_octsep这两列就彻底消失了，那么怎么将这两列恢复为数据列呢?pandas提供了reset_index方法
+```df=df.reset_index(['rain_octsep','water_year'])```
+
+### 数据过滤
+直接上例子
+```df.rain_octsep<1000``` 返回的是一个series，标签是行号，每一个元素为True或者False
+```df[df.rain_octset<1000]``` 返回的是过滤后的满足条件的行，这些行的rain_octsep的值均小于1000
+
+也可以通过复合条件表达式来进行过滤
+<pre>
+# Filtering by multiple conditionals
+df[(df.rain_octsep < 1000) & (df.outflow_octsep < 4000)] # Can't use the keyword 'and'
+</pre>
+
+这条代码只会返回 rain_octsep 中小于 1000 的和 outflow_octsep 中小于 4000 的记录。注意重要的一点：这里不能用 and 关键字，因为会引发操作顺序的问题。必须用 & 和圆括号。
+
+如果你的数据中字符串，好消息，你也可以使用字符串方法来进行过滤：
+<pre>
+# Filtering by string methods
+df[df.water_year.str.startswith('199')]
+</pre>
+
+注意，你必须用 .str.[string method] ，而不能直接在字符串上调用字符方法。上面的代码返回所有 90 年代的记录
+
+### 剩下还有一些内容不再单独学习，碰到了再说
+http://codingpy.com/article/a-quick-intro-to-pandas/
