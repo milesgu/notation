@@ -73,13 +73,13 @@ plt.xticks(np.arange(2),(u'未获救',u'获救'),rotation=0)
 plt.title(u'获救情况')
 plt.ylabel(u'人数',verticalalignment='top',horizontalalignment='left',rotation=0)
 </pre>
-
+![](./获救情况.png)
 ##### 各船舱存活人数
 理想中的图表应为：横坐标是船舱，直方图，每一个直方叠加得画了存活人数和未存活人数
 ```Survived_0=data_train[data_train.Survived == 0].Pclass.value_counts()```
 这样求出的是各个舱中未存活人数的统计值
 别人的代码是这么写的也行，但还是我的解释性高一点
-```Survived_1=data_train.Pclass[data_train.Survived == 0].value_counts()```
+```Survived_0=data_train.Pclass[data_train.Survived == 0].value_counts()```
 
 ```Survived_0``` 的输出如下
 <pre>
@@ -94,3 +94,76 @@ type(Survived_0)
 Out[72]: pandas.core.series.Series
 </pre>
 可见它是一个Series，标签类型是Pclass（本质也是int），内容是int
+同理可求得各个舱中存活人数的统计值
+```Survived_1=data_train[data_train.Survived == 1].Pclass.value_counts()```
+
+接下来我们将这两个Series拼成一个DataFrame
+下面是方法介绍，其中参数给出的是列表，当然也可以是Series
+<pre>
+d = {'col1': [1, 2], 'col2': [3, 4]}
+df = pd.DataFrame(data=d)
+df
+   col1  col2
+0     1     3
+1     2     4
+</pre>
+可见，每一个列表/Series按照列的形式进行组织
+<pre>
+df = pd.DataFrame({u'未获救':Survived_0,u'获救':Survived_1})
+df
+Out[81]: 
+   未获救   获救
+1   80  136
+2   97   87
+3  372  119
+</pre>
+可见，这样得到的DataFrame横坐标是舱等级，纵坐标是获救/未获救人数
+接下来还是直接调用DataFrame的plot方法，由于获救人数和未获救人数是同一性质的，所以我们将stacked置为True
+总代码如下：
+<pre>
+Survived_0=data_train[data_train.Survived == 0].Pclass.value_counts()
+Survived_1=data_train[data_train.Survived == 1].Pclass.value_counts()
+df = pd.DataFrame({u'未获救':Survived_0,u'获救':Survived_1})
+df.plot(kind='bar',stacked=True)
+plt.title('不同等级舱的获救情况')
+plt.xticks(np.arange(3),('1等舱','2等舱','3等舱'),rotation=0)
+</pre>
+图表如下
+![](./不同等级舱的获救情况.png)
+观察到，3等舱人最多，但是获救人数比例很少；1、2等舱人数较少，后者比前者较少，但是在获救比例上，前者超过了一半，后者没有超过一半。
+
+##### 不同性别的存活情况
+图的形式和不同等级舱的存货情况相同，废话不多说，直接上代码
+<pre>
+Survived_M=data_train[data_train.Sex == 'male'].Survived.value_counts()
+Survived_F=data_train[data_train.Sex == 'female'].Survived.value_counts()
+df=pd.DataFrame({'男':Survived_M,'女':Survived_F})
+df=df.transpose()
+df.columns=['未获救','获救']
+df.plot(kind='bar',stacked=True)
+plt.xticks(np.arange(2),('女','男'),rotation=0)
+plt.title('不同性别的获救情况')
+plt.ylabel('人数')
+</pre>
+我们观察到，虽然图表和上一部分是一样的，但是代码却不带一样，仔细观察一下，这个顺序其实无所谓，因为后面我们可以通过转置来进行调整。
+图表如下
+![](./不同性别的获救情况.png)
+可见女性的获救比例比男性高得多
+**tips:**
+    上面的两个部分中，我们都对DataFrame进行了筛选，筛选的条件可以不是唯一的，可以增加更多的中括号+选择条件的方式进行复合条件选择
+##### 各登船港口的获救情况
+代码
+<pre>
+Survived_0=data_train[data_train.Survived == 0].Embarked.value_counts()
+Survived_1=data_train[data_train.Survived == 1].Embarked.value_counts()
+df=pd.DataFrame({u'未获救':Survived_0,u'获救':Survived_1})
+df.plot(kind='bar',stacked=True)
+plt.title('不同港口获救情况')
+plt.ylabel('人数')
+plt.xticks([0,1,2],('S','C','Q'),rotation=0)
+</pre>
+
+![](./不同港口获救情况.png)
+可见各港口的登船人数差距较大，在获救比例上，C港口较高，S和Q港口较低。
+猜测不同的港口对应不同的居住区，不同的居住区的居民的社会地位和经济水平不同。
+
