@@ -13,4 +13,6 @@ powershell还支持cmd中对应用程序的调用（windows的原生命令）
 当然也可以用```gal -Definition get-process```获得get-process的别名
 
 Power shell的命令很多，我们也记不住所有的命令。因此，Power shell的研发人员开发了一个很详细的帮助系统，我们需要学会如何使用这个帮助系统。
+get-help help man + 命令名 就可以查询 该命令的帮助页面
+
 
