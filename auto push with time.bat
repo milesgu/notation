@@ -10,7 +10,7 @@ echo ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 echo;
 echo git commit start
 git commit -m "%date% %time%"
-echo git commit dones
+echo git commit done
 echo ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 echo;
