@@ -1,5 +1,6 @@
 @echo off
 echo pwd: %cd%
+echo ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 echo git add start
 git add -A .
@@ -8,7 +9,7 @@ echo ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 echo;
 echo git commit start
-set /p declation=input information:
+set /p declation=input commit information:
 git commit -m "%declation%"
 echo git commit done
 echo ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
