@@ -1,0 +1,3 @@
+INSERT INTO book
+SELECT *
+FROM OPENROWSET('MICROSOFT.JET.OLEDB.4.0', 'EXCEL 5.0;HDR=YES;DATABASE=C:\Users\16417\Desktop\notation\database\courses\实验\实验二\数据\book.xls', sheet1$)
