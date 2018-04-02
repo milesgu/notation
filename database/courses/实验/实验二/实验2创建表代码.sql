@@ -76,7 +76,7 @@ create table teacher(
     birth date,
     department_id varchar(10) not null,
     profession varchar(10) not null,
-    telephone varchar(15) not null,
+    telephone varchar(15,0) not null,
     home_addr varchar(200),
     postalcode varchar(10),
     primary key(teacher_id)
@@ -89,7 +89,7 @@ create table teacher_course_class(
     class_id varchar(10) not null,
     semester tinyint not null,
     school_year varchar(10) not null,
-    course_schedule varchar(10) not null,
+    course_schedule decimal(10,0) not null,
     course_classroom varchar(10) not null,
     book_id varchar(20),
     primary key(teacher_id,course_id,class_id)
