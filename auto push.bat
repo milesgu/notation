@@ -16,7 +16,7 @@ echo ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 echo;
 echo git push start
-git push git@github.com:unforgettable-heart/notation
+git push git@github.com:milesgu/notation
 echo git push done
 echo ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
