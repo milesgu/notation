@@ -45,3 +45,6 @@ INSERT INTO teacher_course_class
 SELECT *  
 FROM OPENROWSET('MICROSOFT.JET.OLEDB.4.0', 'EXCEL 5.0;HDR=YES;DATABASE=C:\Users\16417\Desktop\notation\database\courses\实验\实验二\数据\teacher_course_class.xls', sheet1$)  
 go
+
+
+
